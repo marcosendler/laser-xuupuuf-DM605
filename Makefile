@@ -7,7 +7,7 @@ ORIGINAL := interface-original/index.html
 SAIDA := nova-interface
 FONTES := $(FONTE)/patch.js $(FONTE)/laser_addon.js $(FONTE)/laser_ui.js $(FONTE)/laser_config.js $(FONTE)/laser_theme.css
 
-.PHONY: build testar enviar verificar ajuda
+.PHONY: build testar simular simular-original enviar verificar ajuda
 
 build: $(SAIDA)/index.html.gz
 
@@ -19,9 +19,17 @@ $(SAIDA)/index.html.gz: $(ORIGINAL) $(FONTES)
 testar: build
 	node $(FONTE)/testar.js
 
+# Abre a interface nova em http://localhost:8080 com uma placa SIMULADA (sem laser ligado)
+simular: build
+	node $(FONTE)/placa-simulada.js
+
+# Mesma coisa com a interface de fabrica (para comparar / tirar print do "antes")
+simular-original:
+	node $(FONTE)/placa-simulada.js $(ORIGINAL)
+
 # Grava a interface na memoria (SPIFFS) da placa, como o botao de upload da propria interface
 enviar: build
-	curl -f -F "path=/" -F "myfile[]=@$(SAIDA)/index.html.gz;filename=/index.html.gz" http://$(PLACA)/files
+	MSYS_NO_PATHCONV=1 curl -f -F "path=/" -F "myfile[]=@$(SAIDA)/index.html.gz;filename=/index.html.gz" http://$(PLACA)/files
 	@echo && echo "Enviado. Recarregue http://$(PLACA)/ no navegador."
 
 # Confere se o HTML gerado nao depende de arquivos externos
@@ -30,6 +38,8 @@ verificar: build
 
 ajuda:
 	@echo "make build      gera nova-interface/index.html e .gz"
-	@echo "make testar     servidor local em http://localhost:8080"
+	@echo "make testar     servidor local em http://localhost:8080 (placa real)"
+	@echo "make simular    servidor local em http://localhost:8080 (placa simulada)"
+	@echo "make simular-original   idem, com a interface de fabrica"
 	@echo "make enviar     envia o .gz para a placa (PLACA=$(PLACA))"
 	@echo "make verificar  confere que nao ha arquivos externos"

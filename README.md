@@ -94,6 +94,8 @@ As mudanças ficam em `nova-interface/fonte/`. O `patch.js` pega a interface ori
 |---|---|
 | `make` | Gera `nova-interface/index.html` e `.gz`, só quando algo na `fonte` mudou |
 | `make testar` | Abre a interface em `http://localhost:8080` controlando a placa de verdade, sem gravar nada nela |
+| `make simular` | Abre a interface em `http://localhost:8080` com uma **placa simulada**, sem precisar do laser |
+| `make simular-original` | Mesma coisa com a interface de fábrica, para comparar |
 | `make verificar` | Confere se nenhum arquivo externo ficou de fora do HTML |
 | `make enviar` | Envia para a placa |
 
@@ -104,6 +106,20 @@ As mudanças ficam em `nova-interface/fonte/`. O `patch.js` pega a interface ori
 | `laser_ui.js` | Tema, atalhos de movimento, aba Wi-Fi |
 | `laser_config.js` | Aba Configurações (nomes dos parâmetros e gravação) |
 | `laser_theme.css` | Visual compacto e tema escuro |
-| `testar.js` | Servidor de teste local |
+| `testar.js` | Servidor de teste local (repassa para a placa real) |
+| `placa-simulada.js` | Placa falsa para testar sem o laser |
+
+### Placa simulada
+
+`make simular` sobe um servidor que responde como a placa, com HTTP, WebSocket, comandos `[ESP...]` e `$`. Assim dá para usar a interface inteira, e tirar prints, com o laser desligado:
+
+- Status, posição e movimento (jog, Home, Desbloquear).
+- Aba Wi-Fi com redes de exemplo. As gravações são aceitas e conferidas, e o "reiniciar" derruba e reconecta a conexão.
+- Configurações (`$$`) com valores de exemplo, que **não** são os da placa real.
+- Cartão SD com 3 arquivos de exemplo, envio e exclusão de arquivos.
+- Gravação simulada: progresso, cronômetro, pausa e botão PARAR. A duração padrão é 90 s; mude com `TRABALHO_SEG=30 make simular`.
+- Upload do `index.html.gz` para a memória da placa (é só aceito, nada muda).
+
+Tudo fica em memória: ao fechar o servidor (Ctrl+C), volta ao estado inicial. O terminal mostra cada comando recebido. Para usar outra porta: `PORTA=9000 make simular`.
 
 Se o `patch.js` parar com `esperado 1 ocorrencia, achou 0`, a interface original mudou e aquele trecho precisa ser ajustado.
