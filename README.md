@@ -6,6 +6,8 @@ Versão melhorada da interface web que roda na placa da DM605 (ESP3D / GRBL_ESP3
 
 A placa continua com o mesmo firmware: só a página web (`index.html.gz`) é trocada.
 
+![Aba Wi-Fi da nova interface](docs/prints/wifi.png)
+
 ```
 interface-original/   interface de fábrica (backup, base para gerar a nova)
 nova-interface/
@@ -18,20 +20,24 @@ Makefile              atalhos para gerar, testar e enviar
 ## Novidades
 
 ### Wi-Fi sem procurar parâmetros (principal novidade)
-Na interface de fábrica, para colocar o laser na sua rede era preciso achar os parâmetros certos (SSID, senha, modo de IP…) no meio da lista de configurações e editar um por um. Agora:
+Na interface de fábrica, para colocar o laser na sua rede era preciso achar os parâmetros certos (SSID, senha, modo de IP…) no meio da lista de configurações e editar um por um:
+
+![Interface de fábrica: lista de parâmetros em inglês](docs/prints/antes-configuracoes.png)
+
+Agora:
 
 - Nova aba **Wi-Fi** (no topo e no menu lateral) com o status atual: modo, IP, rede conectada e nome na rede.
 - **Procurar redes**: lista as redes próximas com intensidade do sinal e cadeado nas redes com senha. É só clicar para preencher.
 - Configuração da rede (SSID e senha), IP fixo ou DHCP, nome na rede (hostname) e da rede própria do laser (ponto de acesso).
 - Antes de gravar, confere os dados (tamanho do nome e da senha, formato do IP). Depois de gravar, lê o valor de volta da placa e mostra ✓ ou ✗ em cada item.
-- Botão **Gravar e reiniciar**: avisa que o laser pode mudar de IP e, se não conseguir conectar, normalmente volta a criar a própria rede.
+- Botões **Salvar** e **Salvar e reiniciar**. O segundo avisa que o laser pode mudar de IP e, se não conseguir conectar, normalmente volta a criar a própria rede.
 
 ### Português
 - Interface toda em **português do Brasil**, que passa a ser o idioma padrão. Inglês e chinês continuam disponíveis em Idioma.
 - As mensagens de erro do GRBL (`error:NN`) são explicadas em português.
 
 ### Segurança na operação
-- Botão vermelho **STOP** sempre visível no canto da tela. Ele reseta a placa na hora e para laser e movimento. Depois é preciso clicar em Desbloquear e fazer o Home de novo.
+- Botão vermelho **PARAR** sempre visível no canto da tela. Ele reseta a placa na hora e para laser e movimento. Depois é preciso clicar em Desbloquear e fazer o Home de novo.
 - O botão **DESL.** do laser agora desliga de verdade (envia `M5`).
 
 ### Trabalhos
@@ -39,14 +45,22 @@ Na interface de fábrica, para colocar o laser na sua rede era preciso achar os 
 - Ao terminar, toca um bipe e mostra o tempo total.
 - **Enquadramento** corrigido: o contorno usa só os movimentos de corte/gravação do arquivo e não inclui mais a origem (0,0) à força.
 
+![Gravação em andamento com cronômetro](docs/prints/trabalho.png)
+
 ### Controle
 - Atalhos de **velocidade** (10, 30, 50, 100, 200 mm/s) e **distância** (0,1, 1, 5, 10, 50 mm) para movimentar o cabeçote.
 - Layout mais compacto, sem os sliders verticais gigantes.
 - **Tema escuro/claro** (botão ☀/☾). O escolhido fica salvo no navegador.
 
+![Tela de controle com atalhos de velocidade e distância](docs/prints/controle.png)
+
+![Tema claro](docs/prints/tema-claro.png)
+
 ### Configurações
 - Nomes e descrições corretos para os parâmetros próprios deste firmware. Exemplos: `$101` e `$102` são os passos/mm do eixo Y no modo normal e no modo rotativo, não do Y e do Z; `$44` é o air assist; `$43` é o sensor de chama.
 - Cada parâmetro tem seu botão **Gravar** (ou Enter). A interface confere o valor gravado na placa e marca a linha como alterada, salvando, ✓ salvo ou ✗ erro.
+
+![Aba Configurações em português](docs/prints/configuracoes.png)
 
 ### Correções internas
 - Nomes de arquivo e de pasta com caracteres especiais não quebram mais a página.
@@ -68,9 +82,13 @@ Depois de atualizar, use a nova aba **Wi-Fi** para colocar o laser na rede da su
 
 ### Opção 1 — Pela própria interface (sem instalar nada)
 1. Com o computador na rede do laser (Passo 0), abra `http://IP-DA-PLACA/`.
-2. Abra o gerenciador de arquivos da placa (**ESP3D Filesystem**).
-3. Envie o arquivo `nova-interface/index.html.gz`, substituindo o que já existe na raiz (`/`).
+2. Vá em **About/Sobre → Update WEBUI**. Abre o gerenciador de arquivos da placa (ESP3D Filesystem).
+3. Em **Selecionar arquivos**, escolha `nova-interface/index.html.gz` e envie, substituindo o que já existe na raiz (`/`).
 4. Recarregue a página com **Ctrl+F5**.
+
+![Gerenciador de arquivos da placa, aberto por Sobre → Update WEBUI](docs/prints/atualizar-interface.png)
+
+*Os prints foram feitos com a placa simulada (`make simular`). Redes, IP e valores são de exemplo.*
 
 ### Opção 2 — Pelo terminal
 Precisa de [Node.js](https://nodejs.org), `make` e `curl`. Os comandos são iguais no Linux e no Windows.
